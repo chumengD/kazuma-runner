@@ -127,10 +127,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="about.cpp" />
+    <ClCompile Include="game.cpp" />
+    <ClCompile Include="help.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="menu.cpp" />
+    <ClCompile Include="rang.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
+    <ClInclude Include="resource.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="public\arrow.png" />
+    <Image Include="public\b1.png" />
+    <Image Include="public\b2.png" />
+    <Image Include="public\bg1.png" />
+    <Image Include="public\bg2.png" />
+    <Image Include="public\button.png" />
+    <Image Include="public\c1.png" />
+    <Image Include="public\c2.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

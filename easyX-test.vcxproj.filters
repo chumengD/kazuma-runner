@@ -13,9 +13,27 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="源文件\public">
+      <UniqueIdentifier>{dd15013b-9d2a-47ec-89a4-fa132d855b00}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="menu.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="about.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="help.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="rang.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="game.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
@@ -23,5 +41,34 @@
     <ClInclude Include="main.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="public\b1.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\b2.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\bg1.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\bg2.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\c1.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\c2.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\arrow.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\button.png">
+      <Filter>源文件\public</Filter>
+    </Image>
   </ItemGroup>
 </Project>

@@ -2,9 +2,24 @@
 
 
 int main() {
-    initgraph(650, 500, EX_SHOWCONSOLE); // 加上 EX_SHOWCONSOLE 可以同时看到控制台窗口
-    // ... 绘图代码 ...
-    _getch();
+    initgraph(WINDOW_WID,WINDOW_HEI); 
+	setbkcolor(BROWN);
+	cleardevice();
+	//设置文字透明背景
+	setbkmode(TRANSPARENT);
+	InitMenu();  
+	ExMessage msg;
+
+	int result = 1;
+	while (result) {
+		//game() 
+		if (peekmessage(&msg, EX_KEY)) {
+			if (msg.message == WM_KEYDOWN &&
+				msg.vkcode == VK_ESCAPE) {
+				result = menu();
+			}
+		}
+	}
     closegraph();
     return 0;
 }
