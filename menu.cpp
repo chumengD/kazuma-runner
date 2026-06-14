@@ -70,7 +70,7 @@ void DrawMenu(bool isSelect) {
 	int btn_hei = button.getheight();
 	int btn_init_posx = (WINDOW_WID - btn_wid) / 2;
 	int btn_init_posy = 20 + btn_hei;
-	for (int i = 0; i < MENU_COUNT; i++) {
+	for (int i = 1; i <= MENU_COUNT; i++) {
 		int btn_posx = btn_init_posx;
 		int btn_posy = btn_init_posy + i * 75;
 		// 绘制按钮
@@ -89,7 +89,7 @@ void DrawMenu(bool isSelect) {
 			btn_posy + btn_hei,
 		};
 		drawtext(
-			menuItems[i],
+			menuItems[i-1],
 			&r,
 			DT_CENTER | DT_VCENTER | DT_SINGLELINE
 		);

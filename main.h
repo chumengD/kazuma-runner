@@ -3,7 +3,6 @@
 #include <iostream>
 #include <conio.h>
 #include <cstdlib>
-#include <ctime>
 
 #define WINDOW_WID 650
 #define WINDOW_HEI 500

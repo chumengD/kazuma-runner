@@ -64,9 +64,21 @@
   },
   "hotPaths": [
     {
+      "path": "rank.cpp",
+      "accessCount": 4,
+      "lastAccessed": 1781422048467,
+      "type": "file"
+    },
+    {
       "path": "menu.cpp",
       "accessCount": 2,
       "lastAccessed": 1781411723600,
+      "type": "file"
+    },
+    {
+      "path": "main.h",
+      "accessCount": 2,
+      "lastAccessed": 1781416053272,
       "type": "file"
     }
   ],
