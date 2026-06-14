@@ -4,8 +4,8 @@
 #include <conio.h>
 #include <cstdlib>
 
-#define WINDOW_WID 800
-#define WINDOW_HEI 600
+#define WINDOW_WID 650
+#define WINDOW_HEI 500
 
 using namespace std;
 

@@ -1,8 +1,8 @@
 ﻿#include "main.h"
 
 //声明函数
-//void EnterMenu();
-//void DrawMenu(bool isSelect=false);
+int EnterMenu();
+void DrawMenu(bool isSelect=false);
 
 //1-5
 int currentMenu = 1;
@@ -59,8 +59,8 @@ int menu() {
 	return 0;
 }
 
-// 绘制菜单
-void DrawMenu(bool isSelect = false) {
+// 绘制菜单·
+void DrawMenu(bool isSelect) {
 	cleardevice();
 	putimage(0, 0, &bg1);
 	settextstyle(28, 0, L"微软雅黑");
@@ -118,4 +118,5 @@ int EnterMenu() {
 	case 5:
 		exit(0);
 	}
+	return 1;
 }

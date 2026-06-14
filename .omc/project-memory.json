@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1781411331776,
+  "projectRoot": "F:\\visula studio repo\\easyX-test",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "public"
+    ],
+    "gitBranches": {
+      "defaultBranch": "master",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "easyX-test": {
+      "path": "easyX-test",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1781411331742,
+      "keyFiles": []
+    },
+    "public": {
+      "path": "public",
+      "purpose": "Public files",
+      "fileCount": 8,
+      "lastAccessed": 1781411331743,
+      "keyFiles": [
+        "arrow.png",
+        "b1.png",
+        "b2.png",
+        "bg1.png",
+        "bg2.png"
+      ]
+    },
+    "x64": {
+      "path": "x64",
+      "purpose": null,
+      "fileCount": 0,
+      "lastAccessed": 1781411331744,
+      "keyFiles": []
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "menu.cpp",
+      "accessCount": 2,
+      "lastAccessed": 1781411723600,
+      "type": "file"
+    }
+  ],
+  "userDirectives": []
+}
