@@ -30,7 +30,7 @@
     <ClCompile Include="help.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="rang.cpp">
+    <ClCompile Include="rank.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="game.cpp">

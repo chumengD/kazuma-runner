@@ -133,7 +133,7 @@
     <ClCompile Include="help.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
-    <ClCompile Include="rang.cpp" />
+    <ClCompile Include="rank.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="main.h" />
