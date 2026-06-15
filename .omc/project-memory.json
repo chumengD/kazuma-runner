@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1781411331776,
+  "lastScanned": 1781498195186,
   "projectRoot": "F:\\visula studio repo\\easyX-test",
   "techStack": {
     "languages": [],
@@ -38,14 +38,14 @@
       "path": "easyX-test",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1781411331742,
+      "lastAccessed": 1781498195152,
       "keyFiles": []
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
-      "fileCount": 8,
-      "lastAccessed": 1781411331743,
+      "fileCount": 9,
+      "lastAccessed": 1781498195153,
       "keyFiles": [
         "arrow.png",
         "b1.png",
@@ -58,27 +58,75 @@
       "path": "x64",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1781411331744,
+      "lastAccessed": 1781498195154,
       "keyFiles": []
     }
   },
   "hotPaths": [
     {
       "path": "rank.cpp",
-      "accessCount": 4,
-      "lastAccessed": 1781422048467,
+      "accessCount": 18,
+      "lastAccessed": 1781498915729,
       "type": "file"
     },
     {
       "path": "menu.cpp",
-      "accessCount": 2,
-      "lastAccessed": 1781411723600,
+      "accessCount": 17,
+      "lastAccessed": 1781499433528,
       "type": "file"
     },
     {
       "path": "main.h",
+      "accessCount": 5,
+      "lastAccessed": 1781498224946,
+      "type": "file"
+    },
+    {
+      "path": "help.cpp",
+      "accessCount": 4,
+      "lastAccessed": 1781498961900,
+      "type": "file"
+    },
+    {
+      "path": "main.cpp",
+      "accessCount": 3,
+      "lastAccessed": 1781498225631,
+      "type": "file"
+    },
+    {
+      "path": "rank.txt",
+      "accessCount": 3,
+      "lastAccessed": 1781498670611,
+      "type": "file"
+    },
+    {
+      "path": "",
       "accessCount": 2,
-      "lastAccessed": 1781416053272,
+      "lastAccessed": 1781498638122,
+      "type": "directory"
+    },
+    {
+      "path": "easyX-test.vcxproj",
+      "accessCount": 1,
+      "lastAccessed": 1781498637324,
+      "type": "file"
+    },
+    {
+      "path": "game.cpp",
+      "accessCount": 1,
+      "lastAccessed": 1781498670057,
+      "type": "file"
+    },
+    {
+      "path": "FileName.cpp",
+      "accessCount": 1,
+      "lastAccessed": 1781498670340,
+      "type": "file"
+    },
+    {
+      "path": "about.cpp",
+      "accessCount": 1,
+      "lastAccessed": 1781498951848,
       "type": "file"
     }
   ],

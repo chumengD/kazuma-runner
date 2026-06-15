@@ -1,11 +1,16 @@
-#pragma once
+﻿#pragma once
 #include <graphics.h>
 #include <iostream>
 #include <conio.h>
 #include <cstdlib>
+#include <fstream>
+#include <sstream>
+#include <vector>
+#include <tuple>
 
-#define WINDOW_WID 650
-#define WINDOW_HEI 500
+
+#define WINDOW_WID 1200
+#define WINDOW_HEI 700
 
 using namespace std;
 
@@ -20,6 +25,8 @@ int GameStart();
 void HelpPage();
 void AboutPage();
 void LeaderboardPage();
+void drawRank();
+
 
 // ---- 菜单背景图（在 menu.cpp 中加载，其他文件 extern 引用） ----
 extern IMAGE bg2;
