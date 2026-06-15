@@ -4,15 +4,18 @@
 // 常量
 // ========================================
 #define GRAVITY 1
-#define JUMP_VELOCITY -13
+#define JUMP_VELOCITY -18
 #define GROUND_Y 380
 #define PLAYER_X 100
 #define BASE_SPEED 5
 #define MAX_SPEED 14
 #define MAX_OBSTACLES 3
+#define OBS_SCALE 30       // 障碍物缩放到原始尺寸的 60%
 #define MIN_SPAWN_DELAY 35
 #define MAX_SPAWN_DELAY 90
-#define FRAME_DELAY 16   // ~60 FPS
+#define FRAME_DELAY 16       // ~60 FPS
+#define FLYING_OBS_Y 235     // 飞行物高度（站立角色头部位置）
+#define FLYING_CHANCE 30     // 30% 概率生成飞行物
 
 // ========================================
 // 结构体
@@ -28,10 +31,12 @@ struct Player {
 };
 
 struct Obstacle {
-    int x, y;          // 精灵左上角坐标
-    int w, h;          // 碰撞盒宽高
+    int x, y;          // 绘制坐标（原始尺寸）
+    int w, h;          // 碰撞盒宽高（缩放后）
+    int drawW, drawH;  // 绘制宽高（原始尺寸）
     int type;          // 0 = c1, 1 = c2
     bool active;
+    bool flying;       // true = 飞行物，需下蹲躲避
 };
 
 // ========================================
@@ -110,6 +115,7 @@ static void InitGameState() {
     // 障碍物
     for (int i = 0; i < MAX_OBSTACLES; i++) {
         gs.obstacles[i].active = false;
+        gs.obstacles[i].flying = false;
     }
 
     // 游戏状态
@@ -220,8 +226,19 @@ static bool CheckCollision(const Player& p, const Obstacle& o) {
 
     int oL = o.x + insetX;
     int oR = o.x + o.w - insetX;
-    int oT = o.y + insetY;
-    int oB = o.y + o.h - insetY;
+    int oT, oB;
+
+    if (o.flying) {
+        // 飞行物碰撞盒在空气中
+        oT = o.y + insetY;
+        oB = o.y + o.h - insetY;
+        // 下蹲可躲避飞行物
+        if (p.crouching) return false;
+    } else {
+        // 地面障碍物：碰撞盒底部贴地
+        oB = GROUND_Y - insetY;
+        oT = oB - o.h + insetY;
+    }
 
     return (pR > oL && pL < oR && pB > oT && pT < oB);
 }
@@ -235,17 +252,25 @@ static void SpawnObstacle() {
             Obstacle& o = gs.obstacles[i];
             o.active = true;
             o.type = rand() % 2;
+            o.flying = (rand() % 100) < FLYING_CHANCE;
 
             if (o.type == 0) {
-                o.w = img_obs1.getwidth();
-                o.h = img_obs1.getheight();
+                o.drawW = img_obs1.getwidth();
+                o.drawH = img_obs1.getheight();
             } else {
-                o.w = img_obs2.getwidth();
-                o.h = img_obs2.getheight();
+                o.drawW = img_obs2.getwidth();
+                o.drawH = img_obs2.getheight();
             }
+            // 碰撞盒 = 原始尺寸 × 缩放比例
+            o.w = o.drawW * OBS_SCALE / 100;
+            o.h = o.drawH * OBS_SCALE / 100;
 
             o.x = WINDOW_WID + rand() % 80;
-            o.y = GROUND_Y - o.h;
+            if (o.flying) {
+                o.y = FLYING_OBS_Y;          // 飞行物在空中
+            } else {
+                o.y = GROUND_Y - o.drawH;    // 地面障碍物贴地
+            }
             return;
         }
     }
@@ -257,6 +282,12 @@ static void SpawnObstacle() {
 static void HandleGameInput() {
     ExMessage msg;
     while (peekmessage(&msg, EX_KEY)) {
+        // ---- 松开下键：取消下蹲（hold-to-crouch） ----
+        if (msg.vkcode == VK_DOWN && msg.message == WM_KEYUP) {
+            gs.player.crouching = false;
+            continue;
+        }
+
         if (msg.message != WM_KEYDOWN) continue;
 
         // ---- ESC ----
@@ -301,7 +332,7 @@ static void HandleGameInput() {
         }
         if (msg.vkcode == VK_DOWN) {
             if (!p.jumping) {
-                p.crouching = !p.crouching;
+                p.crouching = true;   // 按住下键保持下蹲
             }
         }
     }
@@ -355,7 +386,11 @@ static void DrawObstacles() {
         if (!o.active) continue;
 
         IMAGE* img = (o.type == 0) ? &img_obs1 : &img_obs2;
-        putimage(o.x, o.y, img);
+        if (o.flying) {
+            putimage(o.x, o.y, img);            // 飞行物在空气中
+        } else {
+            putimage(o.x, GROUND_Y - o.drawH, img);  // 地面障碍物贴地
+        }
     }
 }
 

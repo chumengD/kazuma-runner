@@ -1,8 +1,4 @@
-﻿#include "main.h"
-
-//声明函数
-int EnterMenu();
-void DrawMenu(bool isSelect=false);
+﻿#include "menu.h"
 
 //1-5
 int currentMenu = 1;
@@ -99,24 +95,28 @@ void DrawMenu(bool isSelect) {
 int EnterMenu() {
 	//处理玩家选中后的逻辑
 	switch (currentMenu) {
-	case 1: 
-		//game_start();
-		break;
+	case 1:
+		// 启动跑酷游戏，GameStart 阻塞直到用户退出
+		return GameStart();
 
 	case 2:
-		//rang()
+		// 排行榜
+		::rank();
 		break;
 
 	case 3:
-		//help()
+		// 帮助
+		HelpPage();
 		break;
-		
+
 	case 4:
-		//about()
+		// 关于
+		AboutPage();
 		break;
 
 	case 5:
-		exit(0);
+		// 退出程序
+		return 0;
 	}
 	return 1;
 }
