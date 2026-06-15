@@ -13,7 +13,30 @@ const wchar_t* menuItems[] =
 };
 
 // 菜单背景图
-IMAGE bg1, bg2, button, arrow;
+IMAGE bg1, bg2, button, arrow, button_mask, arrow_mask;
+
+// 生成遮罩图：透明区域→白色（保留背景），内容区域→黑色（开出洞来）
+void GenerateMask(IMAGE* src, IMAGE* mask) {
+	int w = src->getwidth();
+	int h = src->getheight();
+	mask->Resize(w, h);
+
+	DWORD* srcBuf = GetImageBuffer(src);
+	DWORD* maskBuf = GetImageBuffer(mask);
+
+	if (srcBuf && maskBuf) {
+		int total = w * h;
+		for (int i = 0; i < total; i++) {
+			// EasyX IMAGE 缓冲格式: 0xAARRGGBB，透明/黑色像素的低 24 位为 0
+			if ((srcBuf[i] & 0x00FFFFFF) == 0) {
+				maskBuf[i] = 0x00FFFFFF; // 白色 → SRCAND 时保留背景
+			}
+			else {
+				maskBuf[i] = 0x00000000; // 黑色 → SRCAND 时挖出洞
+			}
+		}
+	}
+}
 
 // 初始化菜单资源
 void InitMenu() {
@@ -21,6 +44,10 @@ void InitMenu() {
 	loadimage(&bg2, _T("public/bg2.png"));
 	loadimage(&button, _T("public/button.png"));
 	loadimage(&arrow, _T("public/arrow.png"));
+
+	// 为按钮和箭头生成遮罩图
+	GenerateMask(&button, &button_mask);
+	GenerateMask(&arrow, &arrow_mask);
 }
 
 // 读取键盘输入
@@ -69,12 +96,14 @@ void DrawMenu(bool isSelect) {
 	for (int i = 1; i <= MENU_COUNT; i++) {
 		int btn_posx = btn_init_posx;
 		int btn_posy = btn_init_posy + i * 75;
-		// 绘制按钮
-		putimage(btn_posx, btn_posy, &button);
+		// 透明贴图：遮罩 SRCAND 挖洞 + 原图 SRCPAINT 填充
+		putimage(btn_posx, btn_posy, &button_mask, SRCAND);
+		putimage(btn_posx, btn_posy, &button, SRCPAINT);
 
 		// 箭头（仅当前选中项显示）
 		if (i == currentMenu) {
-			putimage(btn_posx - 40, btn_posy + 10, &arrow);
+			putimage(btn_posx - 40, btn_posy + 10, &arrow_mask, SRCAND);
+			putimage(btn_posx - 40, btn_posy + 10, &arrow, SRCPAINT);
 		}
 
 		// 文字（每个按钮都画）
@@ -100,17 +129,14 @@ int EnterMenu() {
 		return GameStart();
 
 	case 2:
-		// 排行榜
-		::rank();
+		drawRank();
 		break;
 
 	case 3:
-		// 帮助
 		HelpPage();
 		break;
 
 	case 4:
-		// 关于
 		AboutPage();
 		break;
 

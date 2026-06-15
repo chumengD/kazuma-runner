@@ -145,6 +145,7 @@
     <ClInclude Include="resource.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="C:\Users\LENOVO\Desktop\pic\rank.png" />
     <Image Include="public\arrow.png" />
     <Image Include="public\b1.png" />
     <Image Include="public\b2.png" />
@@ -153,6 +154,9 @@
     <Image Include="public\button.png" />
     <Image Include="public\c1.png" />
     <Image Include="public\c2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="rank.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

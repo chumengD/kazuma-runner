@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include <graphics.h>
 #include <iostream>
 #include <conio.h>
@@ -25,6 +25,8 @@ int GameStart();
 void HelpPage();
 void AboutPage();
 void LeaderboardPage();
+void drawRank();
+
 
 // ---- 菜单背景图（在 menu.cpp 中加载，其他文件 extern 引用） ----
 extern IMAGE bg2;
