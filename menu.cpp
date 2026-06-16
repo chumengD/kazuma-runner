@@ -37,6 +37,7 @@ void GenerateMask(IMAGE* src, IMAGE* mask) {
 }
 
 IMAGE bg1, bg2, button, arrow, button_mask, arrow_mask, black_bg;
+IMAGE rankStyle, rank_mask;
 
 
 // 初始化菜单资源
@@ -47,6 +48,11 @@ void InitResource() {
 	loadimage(&arrow, _T("public/arrow.png"));
 	loadimage(&black_bg, _T("public/black_bg.png"));
 
+	// 加载排行榜资源
+	loadimage(&rankStyle, _T("public/rank.png"));
+	if (rankStyle.getwidth() > 0) {
+		GenerateMask(&rankStyle, &rank_mask);
+	}
 
 	// 为按钮和箭头生成遮罩图
 	GenerateMask(&button, &button_mask);

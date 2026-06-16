@@ -1,9 +1,7 @@
 ﻿#include "main.h"
 #include <windows.h>
 
-#define MAX 10
-
-IMAGE rankStyle, rank_mask;
+#define MAX 11  // 1 个表头 + 10 条记录
 
 // UTF-8 string → wstring（正确处理中文等多字节字符，跳过 BOM）
 wstring UTF8ToWide(const string& str) {
@@ -23,11 +21,6 @@ wstring UTF8ToWide(const string& str) {
 	return result;
 }
 
-void initRank() {
-	loadimage(&rankStyle, _T("public/rank.png"));
-	GenerateMask(&rankStyle, &rank_mask);
-}
-
 void readRank(vector<tuple<int, double>>& t) {
 	ifstream file;
 	file.open("rank.txt", ios::in);
@@ -37,13 +30,25 @@ void readRank(vector<tuple<int, double>>& t) {
 	}
 
 	string line;
-	int score;
-	double time;
 
 	while (getline(file, line)) {
+		int score = 0;
+		double time = 0.0;
 		stringstream string_stream(line);
-		string_stream >> score >> time;
-		t.push_back(tuple<int, double> {score, time});
+
+		string first;
+		string_stream >> first;
+		if (first.empty()) continue;
+		if (!isdigit(static_cast<unsigned char>(first[0])) && first[0] != '-') {
+			string_stream >> score >> time;
+		} else {
+			
+			score = stoi(first);
+			string_stream >> time;
+		}
+		if (!string_stream.fail()) {
+			t.push_back(tuple<int, double> {score, time});
+		}
 	}
 
 	file.close();
@@ -71,7 +76,9 @@ void writeRank(tuple<int, double>& element) {
 }
 
 void drawRank() {
-	initRank();
+	// 资源未加载时的保护
+	if (rankStyle.getwidth() <= 0) return;
+
 	cleardevice();
 	putimage(0, 0, &bg1);
 
@@ -90,7 +97,7 @@ void drawRank() {
 		putimage(x, y, &rankStyle, SRCPAINT);
 		settextcolor(BLACK);
 		
-		if (i < len+1) {
+		if (i <= len) {
 			int id_x = x + 45;
 			int score_x = x + 150;
 			int time_x = x + rankStyle.getwidth() - 80;
@@ -104,8 +111,8 @@ void drawRank() {
 			// string → wstring，适配 outtextxy
 			wstring id = to_wstring(i);
 			wstring score = to_wstring(std::get<0>(rank[i-1]));
-			TCHAR time_buf[32];
-			_stprintf_s(time_buf, _T("%.2f"), std::get<1>(rank[i-1]));
+			TCHAR time_buf[64];
+			_stprintf_s(time_buf, _countof(time_buf), _T("%.2f"), std::get<1>(rank[i-1]));
 			wstring time = time_buf;
 
 			

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "main.h"
 
 // ---- 菜单内部函数 ----
@@ -9,4 +9,4 @@ void DrawMenu(bool isSelect = false);
 extern IMAGE bg1, button, arrow;
 
 // ---- rank.cpp 函数 ----
-void rank();
+void drawRank();

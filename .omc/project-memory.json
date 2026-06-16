@@ -1,6 +1,6 @@
 {
   "version": "1.0.0",
-  "lastScanned": 1781498195186,
+  "lastScanned": 1781586848837,
   "projectRoot": "F:\\visula studio repo\\easyX-test",
   "techStack": {
     "languages": [],
@@ -38,107 +38,83 @@
       "path": "easyX-test",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1781498195152,
+      "lastAccessed": 1781586848822,
       "keyFiles": []
     },
     "public": {
       "path": "public",
       "purpose": "Public files",
-      "fileCount": 9,
-      "lastAccessed": 1781498195153,
+      "fileCount": 17,
+      "lastAccessed": 1781586848823,
       "keyFiles": [
+        "2.png",
+        "aqura.png",
         "arrow.png",
         "b1.png",
-        "b2.png",
-        "bg1.png",
-        "bg2.png"
+        "b2.png"
       ]
     },
     "x64": {
       "path": "x64",
       "purpose": null,
       "fileCount": 0,
-      "lastAccessed": 1781498195154,
+      "lastAccessed": 1781586848823,
       "keyFiles": []
     }
   },
   "hotPaths": [
     {
       "path": "rank.cpp",
-      "accessCount": 37,
-      "lastAccessed": 1781579589387,
+      "accessCount": 18,
+      "lastAccessed": 1781588165352,
       "type": "file"
     },
     {
       "path": "menu.cpp",
-      "accessCount": 20,
-      "lastAccessed": 1781576809146,
+      "accessCount": 5,
+      "lastAccessed": 1781587287142,
       "type": "file"
     },
     {
       "path": "main.h",
-      "accessCount": 6,
-      "lastAccessed": 1781504917712,
-      "type": "file"
-    },
-    {
-      "path": "main.cpp",
-      "accessCount": 6,
-      "lastAccessed": 1781505050396,
-      "type": "file"
-    },
-    {
-      "path": "help.cpp",
-      "accessCount": 5,
-      "lastAccessed": 1781576446751,
+      "accessCount": 3,
+      "lastAccessed": 1781587856586,
       "type": "file"
     },
     {
       "path": "rank.txt",
       "accessCount": 3,
-      "lastAccessed": 1781498670611,
+      "lastAccessed": 1781587856912,
+      "type": "file"
+    },
+    {
+      "path": "main.cpp",
+      "accessCount": 2,
+      "lastAccessed": 1781587927991,
       "type": "file"
     },
     {
       "path": "",
-      "accessCount": 3,
-      "lastAccessed": 1781576446477,
+      "accessCount": 2,
+      "lastAccessed": 1781587967882,
       "type": "directory"
+    },
+    {
+      "path": "easyX-test.slnx",
+      "accessCount": 1,
+      "lastAccessed": 1781586949017,
+      "type": "file"
     },
     {
       "path": "easyX-test.vcxproj",
       "accessCount": 1,
-      "lastAccessed": 1781498637324,
+      "lastAccessed": 1781586953631,
       "type": "file"
     },
     {
-      "path": "game.cpp",
+      "path": "menu.h",
       "accessCount": 1,
-      "lastAccessed": 1781498670057,
-      "type": "file"
-    },
-    {
-      "path": "FileName.cpp",
-      "accessCount": 1,
-      "lastAccessed": 1781498670340,
-      "type": "file"
-    },
-    {
-      "path": "about.cpp",
-      "accessCount": 1,
-      "lastAccessed": 1781498951848,
-      "type": "file"
-    },
-    {
-      "path": "public\\bg2.png",
-      "accessCount": 1,
-      "lastAccessed": 1781503890940,
-      "type": "file"
-    },
-    {
-      "path": "public\\bg1.png",
-      "accessCount": 1,
-      "lastAccessed": 1781503891284,
+      "lastAccessed": 1781587236947,
       "type": "file"
     }
   ],

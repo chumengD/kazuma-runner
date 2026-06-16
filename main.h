@@ -34,5 +34,8 @@ extern IMAGE bg2;
 extern IMAGE black_bg;
 extern IMAGE bg1;
 
+// ---- 排行榜资源（在 menu.cpp 中加载） ----
+extern IMAGE rankStyle, rank_mask;
+
 // ---- 游戏状态标志（菜单判断是否正在游戏中） ----
 extern bool g_inGame;
