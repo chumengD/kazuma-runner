@@ -3,26 +3,35 @@
 // ========================================
 // 常量
 // ========================================
-#define GRAVITY 1
-#define JUMP_VELOCITY -18
-#define GROUND_Y 380
-#define PLAYER_X 100
+#define GRAVITY 0.8
+#define JUMP_VELOCITY -20
+#define JUMP_RELEASE_VELOCITY -12  // 松开跳跃键时的最小上升速度（短按=小跳）
+#define GROUND_Y 350
+#define PLAYER_X 120
 #define BASE_SPEED 5
 #define MAX_SPEED 14
 #define MAX_OBSTACLES 3
-#define OBS_SCALE 30       // 障碍物缩放到原始尺寸的 60%
-#define MIN_SPAWN_DELAY 35
-#define MAX_SPAWN_DELAY 90
+#define OBS_SCALE 90       // 障碍物碰撞盒 = 显示尺寸 × 60%
+#define MIN_SPAWN_DELAY 80
+#define MAX_SPAWN_DELAY 160
 #define FRAME_DELAY 16       // ~60 FPS
-#define FLYING_OBS_Y 235     // 飞行物高度（站立角色头部位置）
+#define FLYING_OBS_HIGH 220  // 飞行物高度-高位（头部）
+#define FLYING_OBS_LOW  310  // 飞行物高度-低位（贴地）
 #define FLYING_CHANCE 30     // 30% 概率生成飞行物
+#define FLYING_SPEED_BONUS 3 // 飞行物额外速度
+
+// 精灵显示尺寸（loadimage 时缩放至以下尺寸）
+#define PLAYER_STAND_W   60   // kazuma 站立宽
+#define PLAYER_STAND_H  145   // kazuma 站立高
+#define PLAYER_CROUCH_W  60   // kazuma 下蹲宽
+#define PLAYER_CROUCH_H  95   // kazuma 下蹲高
 
 // ========================================
 // 结构体
 // ========================================
 struct Player {
     int x, y;          // 精灵左上角坐标
-    int vy;            // 垂直速度
+    float vy;          // 垂直速度（float 以支持小数重力）
     int w, h;          // 碰撞盒宽高
     bool jumping;
     bool crouching;
@@ -54,10 +63,11 @@ static struct {
 } gs;
 
 // 已加载的精灵
-static IMAGE img_player1;   // b1
-static IMAGE img_player2;   // b2
-static IMAGE img_obs1;      // c1
-static IMAGE img_obs2;      // c2
+static IMAGE img_player1;   // kazuma 站立
+static IMAGE img_player2;   // kazuma 下蹲
+static IMAGE img_obs1;      // lalatina 高障碍物
+static IMAGE img_obs2;      // megume 矮宽障碍物
+static IMAGE img_flying;    // aqura 飞行物
 static bool g_imagesLoaded = false;
 
 // 最高分（rang.cpp 通过 extern 引用）
@@ -88,10 +98,11 @@ static void DrawGameOverOverlay();
 // ========================================
 static void LoadGameImages() {
     if (g_imagesLoaded) return;
-    loadimage(&img_player1, _T("public/b1.png"));
-    loadimage(&img_player2, _T("public/b2.png"));
-    loadimage(&img_obs1,    _T("public/c1.png"));
-    loadimage(&img_obs2,    _T("public/c2.png"));
+    loadimage(&img_player1, _T("public/kazuma.png"),   PLAYER_STAND_W,  PLAYER_STAND_H,  true);
+    loadimage(&img_player2, _T("public/kazuma.png"),   PLAYER_CROUCH_W, PLAYER_CROUCH_H, true);
+    loadimage(&img_obs1,    _T("public/lalatina.png"), 48,              120,              true);
+    loadimage(&img_obs2,    _T("public/megume.png"),   100,             58,              true);
+    loadimage(&img_flying,  _T("public/aqura.png"),    100,             60,              true);
     g_imagesLoaded = true;
 }
 
@@ -165,15 +176,15 @@ static void UpdateGame() {
         Obstacle& o = gs.obstacles[i];
         if (!o.active) continue;
 
-        o.x -= gs.speed;
+        o.x -= gs.speed + (o.flying ? FLYING_SPEED_BONUS : 0);
 
         // 离开左边界 → 得分
         if (o.x + o.w < 0) {
             o.active = false;
             gs.score++;
 
-            // 每 100 分加速
-            if (gs.score % 100 == 0 && gs.speed < MAX_SPEED) {
+            // 每 20 分加速
+            if (gs.score % 20 == 0 && gs.speed < MAX_SPEED) {
                 gs.speed++;
             }
         }
@@ -185,8 +196,8 @@ static void UpdateGame() {
         SpawnObstacle();
         int minDelay = MIN_SPAWN_DELAY - gs.speed;
         int maxDelay = MAX_SPAWN_DELAY - gs.speed;
-        if (minDelay < 18) minDelay = 18;
-        if (maxDelay < 35) maxDelay = 35;
+        if (minDelay < 40) minDelay = 40;
+        if (maxDelay < 70) maxDelay = 70;
         gs.spawnTimer = minDelay + rand() % (maxDelay - minDelay + 1);
     }
 
@@ -251,25 +262,31 @@ static void SpawnObstacle() {
         if (!gs.obstacles[i].active) {
             Obstacle& o = gs.obstacles[i];
             o.active = true;
-            o.type = rand() % 2;
             o.flying = (rand() % 100) < FLYING_CHANCE;
 
-            if (o.type == 0) {
-                o.drawW = img_obs1.getwidth();
-                o.drawH = img_obs1.getheight();
-            } else {
-                o.drawW = img_obs2.getwidth();
-                o.drawH = img_obs2.getheight();
-            }
-            // 碰撞盒 = 原始尺寸 × 缩放比例
-            o.w = o.drawW * OBS_SCALE / 100;
-            o.h = o.drawH * OBS_SCALE / 100;
-
-            o.x = WINDOW_WID + rand() % 80;
             if (o.flying) {
-                o.y = FLYING_OBS_Y;          // 飞行物在空中
+                // 飞行物：用 aqura 的尺寸
+                o.type = -1;  // 飞行物无地面类型
+                o.drawW = img_flying.getwidth();
+                o.drawH = img_flying.getheight();
+                o.w = o.drawW * OBS_SCALE / 100;
+                o.h = o.drawH * OBS_SCALE / 100;
+                o.x = WINDOW_WID + rand() % 80;
+                o.y = (rand() % 2) ? FLYING_OBS_HIGH : FLYING_OBS_LOW;
             } else {
-                o.y = GROUND_Y - o.drawH;    // 地面障碍物贴地
+                // 地面障碍物：随机 lalatina (0) 或 megume (1)
+                o.type = rand() % 2;
+                if (o.type == 0) {
+                    o.drawW = img_obs1.getwidth();
+                    o.drawH = img_obs1.getheight();
+                } else {
+                    o.drawW = img_obs2.getwidth();
+                    o.drawH = img_obs2.getheight();
+                }
+                o.w = o.drawW * OBS_SCALE / 100;
+                o.h = o.drawH * OBS_SCALE / 100;
+                o.x = WINDOW_WID + rand() % 80;
+                o.y = GROUND_Y - o.drawH;    // 贴地
             }
             return;
         }
@@ -285,6 +302,16 @@ static void HandleGameInput() {
         // ---- 松开下键：取消下蹲（hold-to-crouch） ----
         if (msg.vkcode == VK_DOWN && msg.message == WM_KEYUP) {
             gs.player.crouching = false;
+            continue;
+        }
+
+        // ---- 松开跳跃键：短按小跳（长按大跳） ----
+        if ((msg.vkcode == VK_SPACE || msg.vkcode == VK_UP)
+            && msg.message == WM_KEYUP) {
+            Player& p = gs.player;
+            if (p.jumping && p.vy < JUMP_RELEASE_VELOCITY) {
+                p.vy = JUMP_RELEASE_VELOCITY;   // 削减上升速度 → 小跳
+            }
             continue;
         }
 
@@ -327,7 +354,7 @@ static void HandleGameInput() {
             if (!p.jumping) {
                 p.jumping = true;
                 p.crouching = false;
-                p.vy = JUMP_VELOCITY;
+                p.vy = JUMP_VELOCITY;   // 按下跳跃：全速起跳
             }
         }
         if (msg.vkcode == VK_DOWN) {
@@ -366,14 +393,7 @@ static void DrawGame() {
 // ========================================
 static void DrawPlayer() {
     const Player& p = gs.player;
-    IMAGE* img;
-
-    if (p.crouching) {
-        img = &img_player2;
-    } else {
-        img = (p.animFrame == 0) ? &img_player1 : &img_player2;
-    }
-
+    IMAGE* img = p.crouching ? &img_player2 : &img_player1;
     putimage(p.x, p.y, img);
 }
 
@@ -385,10 +405,12 @@ static void DrawObstacles() {
         const Obstacle& o = gs.obstacles[i];
         if (!o.active) continue;
 
-        IMAGE* img = (o.type == 0) ? &img_obs1 : &img_obs2;
+        IMAGE* img;
         if (o.flying) {
-            putimage(o.x, o.y, img);            // 飞行物在空气中
+            img = &img_flying;                   // aqura 飞行物
+            putimage(o.x, o.y, img);
         } else {
+            img = (o.type == 0) ? &img_obs1 : &img_obs2;
             putimage(o.x, GROUND_Y - o.drawH, img);  // 地面障碍物贴地
         }
     }
@@ -435,9 +457,17 @@ static void DrawScore() {
     _stprintf_s(buf, _T("最高分: %d"), g_highScore);
     outtextxy(WINDOW_WID - 170, 15, buf);
 
+    // 存活时间 = 帧数 × 每帧时长
+    int totalSec = gs.frameCount * FRAME_DELAY / 1000;
+    int min = totalSec / 60;
+    int sec = totalSec % 60;
+    setcolor(RGB(40, 40, 40));
+    _stprintf_s(buf, _T("时间: %02d:%02d"), min, sec);
+    outtextxy(20, 42, buf);
+
     setcolor(RGB(80, 80, 80));
     _stprintf_s(buf, _T("速度: %d"), gs.speed);
-    outtextxy(20, 42, buf);
+    outtextxy(20, 69, buf);
 }
 
 // ========================================
@@ -452,13 +482,13 @@ static void DrawPauseOverlay() {
     setbkmode(TRANSPARENT);
     setcolor(RGB(255, 255, 255));
 
-    RECT r = { 0, 170, WINDOW_WID, 220 };
+    RECT r = { 0, 145, WINDOW_WID, 205 };
     drawtext(_T("暂停中"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
     settextstyle(18, 0, _T("微软雅黑"));
     setcolor(RGB(200, 200, 200));
 
-    r = { 0, 240, WINDOW_WID, 270 };
+    r = { 0, 230, WINDOW_WID, 265 };
     drawtext(_T("按 空格/回车 继续 | 按 ESC 返回菜单"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 }
 
@@ -474,7 +504,7 @@ static void DrawGameOverOverlay() {
     settextstyle(48, 0, _T("Consolas"));
     setbkmode(TRANSPARENT);
     setcolor(RGB(255, 60, 60));
-    RECT r = { 0, 130, WINDOW_WID, 190 };
+    RECT r = { 0, 85, WINDOW_WID, 155 };
     drawtext(_T("GAME OVER"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
     // 分数
@@ -482,21 +512,31 @@ static void DrawGameOverOverlay() {
     setcolor(RGB(255, 255, 255));
     TCHAR buf[64];
     _stprintf_s(buf, _T("得分: %d"), gs.score);
-    r = { 0, 210, WINDOW_WID, 245 };
+    r = { 0, 165, WINDOW_WID, 200 };
     drawtext(buf, &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
+    // 存活时间
+    {
+        int totalSec = gs.frameCount * FRAME_DELAY / 1000;
+        int min = totalSec / 60;
+        int sec = totalSec % 60;
+        _stprintf_s(buf, _T("存活: %02d:%02d"), min, sec);
+        r = { 0, 205, WINDOW_WID, 240 };
+        drawtext(buf, &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+    }
 
     // 新纪录
     if (gs.score >= g_highScore && gs.score > 0) {
         setcolor(RGB(255, 215, 0));
         settextstyle(22, 0, _T("微软雅黑"));
-        r = { 0, 255, WINDOW_WID, 285 };
+        r = { 0, 255, WINDOW_WID, 290 };
         drawtext(_T("** 新纪录! **"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
     }
 
     // 操作提示
     settextstyle(20, 0, _T("微软雅黑"));
     setcolor(RGB(200, 200, 200));
-    r = { 0, 340, WINDOW_WID, 370 };
+    r = { 0, 345, WINDOW_WID, 380 };
     drawtext(_T("按 R 键重新开始 | 按 ESC 返回菜单"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 }
 
@@ -508,6 +548,7 @@ int GameStart() {
     LoadGameImages();
     InitGameState();
     g_inGame = true;
+    BeginBatchDraw();          // 开启双缓冲，消除闪烁
 
     while (g_inGame) {
         HandleGameInput();
@@ -516,6 +557,7 @@ int GameStart() {
         // 暂停或游戏结束：只渲染，不更新逻辑
         if (gs.paused || gs.over) {
             DrawGame();
+            FlushBatchDraw();
             Sleep(FRAME_DELAY);
             continue;
         }
@@ -523,9 +565,11 @@ int GameStart() {
         // 正常游戏
         UpdateGame();
         DrawGame();
+        FlushBatchDraw();
         Sleep(FRAME_DELAY);
     }
 
+    EndBatchDraw();            // 退出游戏循环，关闭双缓冲
     g_inGame = false;
     return 1;   // 返回菜单（真正的退出在菜单中选"退出游戏"）
 }

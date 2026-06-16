@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\LENOVO\Desktop\pic\rank.png" />
+    <Image Include="public\aqura.png" />
     <Image Include="public\arrow.png" />
     <Image Include="public\b1.png" />
     <Image Include="public\b2.png" />
@@ -154,6 +155,9 @@
     <Image Include="public\button.png" />
     <Image Include="public\c1.png" />
     <Image Include="public\c2.png" />
+    <Image Include="public\kazuma.png" />
+    <Image Include="public\lalatina.png" />
+    <Image Include="public\megume.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="rank.txt" />

@@ -40,8 +40,8 @@ void GenerateMask(IMAGE* src, IMAGE* mask) {
 
 // 初始化菜单资源
 void InitMenu() {
-	loadimage(&bg1, _T("public/bg1.png"));
-	loadimage(&bg2, _T("public/bg2.png"));
+	loadimage(&bg1, _T("public/bg1.png"), WINDOW_WID, WINDOW_HEI, true);
+	loadimage(&bg2, _T("public/bg2.png"), WINDOW_WID, WINDOW_HEI, true);
 	loadimage(&button, _T("public/button.png"));
 	loadimage(&arrow, _T("public/arrow.png"));
 
