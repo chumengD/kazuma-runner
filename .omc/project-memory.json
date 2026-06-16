@@ -65,32 +65,32 @@
   "hotPaths": [
     {
       "path": "rank.cpp",
-      "accessCount": 18,
-      "lastAccessed": 1781498915729,
+      "accessCount": 26,
+      "lastAccessed": 1781578821205,
       "type": "file"
     },
     {
       "path": "menu.cpp",
-      "accessCount": 17,
-      "lastAccessed": 1781499433528,
+      "accessCount": 20,
+      "lastAccessed": 1781576809146,
       "type": "file"
     },
     {
       "path": "main.h",
-      "accessCount": 5,
-      "lastAccessed": 1781498224946,
-      "type": "file"
-    },
-    {
-      "path": "help.cpp",
-      "accessCount": 4,
-      "lastAccessed": 1781498961900,
+      "accessCount": 6,
+      "lastAccessed": 1781504917712,
       "type": "file"
     },
     {
       "path": "main.cpp",
-      "accessCount": 3,
-      "lastAccessed": 1781498225631,
+      "accessCount": 6,
+      "lastAccessed": 1781505050396,
+      "type": "file"
+    },
+    {
+      "path": "help.cpp",
+      "accessCount": 5,
+      "lastAccessed": 1781576446751,
       "type": "file"
     },
     {
@@ -101,8 +101,8 @@
     },
     {
       "path": "",
-      "accessCount": 2,
-      "lastAccessed": 1781498638122,
+      "accessCount": 3,
+      "lastAccessed": 1781576446477,
       "type": "directory"
     },
     {
@@ -127,6 +127,18 @@
       "path": "about.cpp",
       "accessCount": 1,
       "lastAccessed": 1781498951848,
+      "type": "file"
+    },
+    {
+      "path": "public\\bg2.png",
+      "accessCount": 1,
+      "lastAccessed": 1781503890940,
+      "type": "file"
+    },
+    {
+      "path": "public\\bg1.png",
+      "accessCount": 1,
+      "lastAccessed": 1781503891284,
       "type": "file"
     }
   ],

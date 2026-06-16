@@ -73,5 +73,26 @@
     <Image Include="public\button.png">
       <Filter>源文件\public</Filter>
     </Image>
+    <Image Include="C:\Users\LENOVO\Desktop\pic\rank.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="public\kazuma.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\kazuma_down.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\lalatina.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\megume.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\black_bg.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="rank.txt" />
   </ItemGroup>
 </Project>
