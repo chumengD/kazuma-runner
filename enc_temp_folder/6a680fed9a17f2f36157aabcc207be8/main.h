@@ -9,8 +9,8 @@
 #include <sstream>
 #include <ctime>
 
-#define WINDOW_WID 1200
-#define WINDOW_HEI 700
+#define WINDOW_WID 800
+#define WINDOW_HEI 650
 
 using namespace std;
 

@@ -28,7 +28,7 @@ void initRank() {
 	GenerateMask(&rankStyle, &rank_mask);
 }
 
-void readRank(vector<tuple<string, int, double>>& t) {
+void readRank(vector<tuple<int, double>>& t) {
 	ifstream file;
 	file.open("rank.txt", ios::in);
 	if (!file) {
@@ -37,21 +37,24 @@ void readRank(vector<tuple<string, int, double>>& t) {
 	}
 
 	string line;
-	string name;
 	int score;
 	double time;
 
 	while (getline(file, line)) {
 		stringstream string_stream(line);
-		string_stream >> name >> score >> time;
-		t.push_back(tuple<string, int, double> {name, score, time});
+		string_stream >> score >> time;
+		t.push_back(tuple<int, double> {score, time});
 	}
 
 	file.close();
 }
 
 
-void writeRank(vector<tuple<string, int, double>>& t) {
+void writeRank(tuple<int, double>& element) {
+	vector<tuple<int, double>> t = {};
+	readRank(t);
+	t.push_back(element);
+
 	ofstream file;
 	file.open("rank.txt", ios::out);
 	if (!file) {
@@ -61,8 +64,7 @@ void writeRank(vector<tuple<string, int, double>>& t) {
 
 	for (auto& x : t) {
 		file << std::get<0>(x) << " "
-			 << std::get<1>(x) << " "
-			 << std::get<2>(x) << endl;
+			 << std::get<1>(x) << endl;
 	}
 
 	file.close();
@@ -73,7 +75,7 @@ void drawRank() {
 	cleardevice();
 	putimage(0, 0, &bg1);
 
-	vector<tuple<string, int, double>> rank;
+	vector<tuple<int, double>> rank;
 
 	readRank(rank);
 	int len = rank.size();
@@ -89,29 +91,34 @@ void drawRank() {
 		settextcolor(BLACK);
 		
 		if (i < len+1) {
-			int name_x = x + 45;
+			int id_x = x + 45;
 			int score_x = x + 150;
 			int time_x = x + rankStyle.getwidth() - 80;
 			int text_y = y + 5;
 			if (i == 0) {
-				outtextxy(name_x-10, text_y, L"排名");
+				outtextxy(id_x-15, text_y, L"排名");
 				outtextxy(score_x, text_y,L"得分");
 				outtextxy(time_x, text_y, L"时间");
 				continue;
 			}
 			// string → wstring，适配 outtextxy
-			wstring name = to_wstring(i);
-			wstring score = to_wstring(std::get<1>(rank[i-1]));
+			wstring id = to_wstring(i);
+			wstring score = to_wstring(std::get<0>(rank[i-1]));
 			TCHAR time_buf[32];
-			_stprintf_s(time_buf, _T("%.2f"), std::get<2>(rank[i-1]));
+			_stprintf_s(time_buf, _T("%.2f"), std::get<1>(rank[i-1]));
 			wstring time = time_buf;
 
 			
-			outtextxy(name_x, text_y, name.c_str());
+			outtextxy(id_x, text_y, id.c_str());
 			outtextxy(score_x,text_y, score.c_str());
 			outtextxy(time_x, text_y, time.c_str());
 		}
 	}
+	settextstyle(18, 0, _T("微软雅黑"));
+	setcolor(RGB(180, 180, 180));
+	RECT br = { 0, 650, WINDOW_WID, WINDOW_HEI };
+	drawtext(_T("按 ESC 返回菜单"), &br, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
+
 	ExMessage ex;
 	while (true) {
 		if (peekmessage(&ex,EX_KEY)) {
