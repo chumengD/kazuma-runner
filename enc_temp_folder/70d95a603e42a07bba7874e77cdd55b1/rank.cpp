@@ -94,7 +94,7 @@ void drawRank() {
 			int time_x = x + rankStyle.getwidth() - 80;
 			int text_y = y + 5;
 			if (i == 0) {
-				outtextxy(name_x-15, text_y, L"排名");
+				outtextxy(name_x-10, text_y, L"排名");
 				outtextxy(score_x, text_y,L"得分");
 				outtextxy(time_x, text_y, L"时间");
 				continue;
@@ -112,11 +112,6 @@ void drawRank() {
 			outtextxy(time_x, text_y, time.c_str());
 		}
 	}
-	settextstyle(18, 0, _T("微软雅黑"));
-	setcolor(RGB(180, 180, 180));
-	RECT br = { 0, 650, WINDOW_WID, WINDOW_HEI };
-	drawtext(_T("按 ESC 返回菜单"), &br, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
-
 	ExMessage ex;
 	while (true) {
 		if (peekmessage(&ex,EX_KEY)) {

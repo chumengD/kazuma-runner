@@ -1,4 +1,4 @@
-#include "main.h"
+﻿#include "main.h"
 
 // ========================================
 // 常量
@@ -65,7 +65,7 @@ bool g_inGame = false;
 // 前向声明
 // ========================================
 static void LoadGameImages();
-static void InitGameState();
+static void InittatGameSe();
 static void UpdateGame();
 static void DrawGame();
 static void HandleGameInput();

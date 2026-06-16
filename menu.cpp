@@ -16,8 +16,6 @@ const wchar_t* menuItems[] =
 	L"5.退出游戏"
 };
 
-// 菜单背景图
-IMAGE bg1, bg2, button, arrow, button_mask, arrow_mask;
 
 // 生成遮罩图：透明区域→白色（保留背景），内容区域→黑色（开出洞来）
 void GenerateMask(IMAGE* src, IMAGE* mask) {
@@ -42,12 +40,17 @@ void GenerateMask(IMAGE* src, IMAGE* mask) {
 	}
 }
 
+IMAGE bg1, bg2, button, arrow, button_mask, arrow_mask, black_bg;
+
+
 // 初始化菜单资源
-void InitMenu() {
-	loadimage(&bg1, _T("public/bg1.png"));
+void InitResource() {
+	loadimage(&bg1, _T("public/bg/transform.png"));
 	loadimage(&bg2, _T("public/bg2.png"));
 	loadimage(&button, _T("public/button.png"));
 	loadimage(&arrow, _T("public/arrow.png"));
+	loadimage(&black_bg, _T("public/black_bg.png"));
+
 
 	// 为按钮和箭头生成遮罩图
 	GenerateMask(&button, &button_mask);
@@ -91,6 +94,7 @@ void DrawMenu(bool isSelect) {
 	cleardevice();
 	putimage(0, 0, &bg1);
 	settextstyle(28, 0, L"微软雅黑");
+	settextcolor(BLACK);
 
 	// 绘制菜单项
 	int btn_wid = button.getwidth();
@@ -125,11 +129,12 @@ void DrawMenu(bool isSelect) {
 	}
 }
 
+//处理玩家选中后的逻辑
 int EnterMenu() {
-	//处理玩家选中后的逻辑
+
 	switch (currentMenu) {
 	case 1: 
-		//game_start();
+		GameStart();
 		break;
 
 	case 2:
