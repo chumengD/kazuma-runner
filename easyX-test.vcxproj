@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="C:\Users\LENOVO\Desktop\pic\rank.png" />
+    <Image Include="public\aqura.png" />
     <Image Include="public\arrow.png" />
     <Image Include="public\b1.png" />
     <Image Include="public\b2.png" />
