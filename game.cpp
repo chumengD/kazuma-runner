@@ -15,7 +15,7 @@
 #define MIN_SPAWN_DELAY 80
 #define MAX_SPAWN_DELAY 160
 #define FRAME_DELAY 16       // ~60 FPS
-#define FLYING_OBS_HIGH 220  // 飞行物高度-高位（头部）
+#define FLYING_OBS_HIGH 200  // 飞行物高度-高位（头部）
 #define FLYING_OBS_LOW  310  // 飞行物高度-低位（贴地）
 #define FLYING_CHANCE 30     // 30% 概率生成飞行物
 #define FLYING_SPEED_BONUS 3 // 飞行物额外速度
@@ -63,11 +63,17 @@ static struct {
 } gs;
 
 // 已加载的精灵
-static IMAGE img_player1;   // kazuma 站立
+static IMAGE img_player_run[6];  // 跑步动画帧 001~006
 static IMAGE img_player2;   // kazuma 下蹲
 static IMAGE img_obs1;      // lalatina 高障碍物
 static IMAGE img_obs2;      // megume 矮宽障碍物
 static IMAGE img_flying;    // aqura 飞行物
+// 精灵遮罩图（用于透明渲染）
+static IMAGE img_player_run_mask[6];
+static IMAGE img_player2_mask;
+static IMAGE img_obs1_mask;
+static IMAGE img_obs2_mask;
+static IMAGE img_flying_mask;
 static bool g_imagesLoaded = false;
 
 // 最高分（rang.cpp 通过 extern 引用）
@@ -94,15 +100,61 @@ static void DrawPauseOverlay();
 static void DrawGameOverOverlay();
 
 // ========================================
+// 精灵遮罩生成 + 透明贴图
+// ========================================
+// 生成精灵遮罩（黑/白/低Alpha → 视为透明背景）
+static void GenerateSpriteMask(IMAGE* src, IMAGE* mask) {
+    int w = src->getwidth();
+    int h = src->getheight();
+    mask->Resize(w, h);
+    DWORD* srcBuf = GetImageBuffer(src);
+    DWORD* maskBuf = GetImageBuffer(mask);
+    if (srcBuf && maskBuf) {
+        int total = w * h;
+        for (int i = 0; i < total; i++) {
+            DWORD pixel = srcBuf[i];
+            BYTE alpha = (pixel >> 24) & 0xFF;
+            DWORD rgb = pixel & 0x00FFFFFF;
+            // 透明条件：低Alpha、纯黑、纯白
+            if (alpha < 128 || rgb == 0x000000 || rgb == 0x00FFFFFF) {
+                maskBuf[i] = 0x00FFFFFF; // 白 → SRCAND 保留背景
+            } else {
+                maskBuf[i] = 0x00000000; // 黑 → SRCAND 挖洞
+            }
+        }
+    }
+}
+
+// 透明贴图：遮罩 SRCAND 挖洞 + 原图 SRCPAINT 填充
+static void DrawSpriteTransparent(IMAGE* img, IMAGE* mask, int x, int y) {
+    putimage(x, y, mask, SRCAND);
+    putimage(x, y, img, SRCPAINT);
+}
+
+// ========================================
 // 图片加载（只加载一次）
 // ========================================
 static void LoadGameImages() {
     if (g_imagesLoaded) return;
-    loadimage(&img_player1, _T("public/kazuma.png"),   PLAYER_STAND_W,  PLAYER_STAND_H,  true);
-    loadimage(&img_player2, _T("public/kazuma.png"),   PLAYER_CROUCH_W, PLAYER_CROUCH_H, true);
+    // 跑步动画 6 帧（文件不存在时回退到 kazuma.png）
+    TCHAR path[64];
+    for (int i = 0; i < 6; i++) {
+        _stprintf_s(path, _T("public/runner/%03d.png"), i + 1);
+
+        if (GetFileAttributes(path) != INVALID_FILE_ATTRIBUTES)
+            loadimage(&img_player_run[i], path, PLAYER_STAND_W, PLAYER_STAND_H, true);
+        else
+            loadimage(&img_player_run[i], _T("public/kazuma.png"), PLAYER_STAND_W, PLAYER_STAND_H, true);
+        GenerateSpriteMask(&img_player_run[i], &img_player_run_mask[i]);
+    }
+    loadimage(&img_player2, _T("public/kazuma_down.png"), PLAYER_CROUCH_W, PLAYER_CROUCH_H, true);
+    GenerateSpriteMask(&img_player2, &img_player2_mask);
     loadimage(&img_obs1,    _T("public/lalatina.png"), 48,              120,              true);
+    GenerateSpriteMask(&img_obs1, &img_obs1_mask);
     loadimage(&img_obs2,    _T("public/megume.png"),   100,             58,              true);
+    GenerateSpriteMask(&img_obs2, &img_obs2_mask);
     loadimage(&img_flying,  _T("public/aqura.png"),    100,             60,              true);
+    GenerateSpriteMask(&img_flying, &img_flying_mask);
     g_imagesLoaded = true;
 }
 
@@ -114,10 +166,10 @@ static void InitGameState() {
 
     // 玩家
     gs.player.x = PLAYER_X;
-    gs.player.y = GROUND_Y - img_player1.getheight();
+    gs.player.y = GROUND_Y - PLAYER_STAND_H;
     gs.player.vy = 0;
-    gs.player.w = img_player1.getwidth();
-    gs.player.h = img_player1.getheight();
+    gs.player.w = PLAYER_STAND_W;
+    gs.player.h = PLAYER_STAND_H;
     gs.player.jumping = false;
     gs.player.crouching = false;
     gs.player.animFrame = 0;
@@ -147,12 +199,22 @@ static void UpdateGame() {
     Player& p = gs.player;
     gs.frameCount++;
 
+    // ---- 按时间加分（每 1 秒 +1 分） ----
+    if (gs.frameCount % 60 == 0) {
+        gs.score++;
+    }
+
+    // ---- 随时间加速（每 15 秒 +1，上限 MAX_SPEED） ----
+    int targetSpeed = BASE_SPEED + gs.frameCount / 900;
+    if (targetSpeed > MAX_SPEED) targetSpeed = MAX_SPEED;
+    gs.speed = targetSpeed;
+
     // ---- 跳跃物理 ----
     if (p.jumping) {
         p.y += p.vy;
         p.vy += GRAVITY;
         // 落地检测（始终以站立高度为准）
-        int groundLevel = GROUND_Y - img_player1.getheight();
+        int groundLevel = GROUND_Y - PLAYER_STAND_H;
         if (p.y >= groundLevel) {
             p.y = groundLevel;
             p.jumping = false;
@@ -165,9 +227,9 @@ static void UpdateGame() {
             p.h = img_player2.getheight();
             p.w = img_player2.getwidth();
         } else {
-            p.y = GROUND_Y - img_player1.getheight();
-            p.h = img_player1.getheight();
-            p.w = img_player1.getwidth();
+            p.y = GROUND_Y - PLAYER_STAND_H;
+            p.h = PLAYER_STAND_H;
+            p.w = PLAYER_STAND_W;
         }
     }
 
@@ -178,15 +240,9 @@ static void UpdateGame() {
 
         o.x -= gs.speed + (o.flying ? FLYING_SPEED_BONUS : 0);
 
-        // 离开左边界 → 得分
+        // 离开左边界
         if (o.x + o.w < 0) {
             o.active = false;
-            gs.score++;
-
-            // 每 20 分加速
-            if (gs.score % 20 == 0 && gs.speed < MAX_SPEED) {
-                gs.speed++;
-            }
         }
     }
 
@@ -206,6 +262,10 @@ static void UpdateGame() {
         if (!gs.obstacles[i].active) continue;
         if (CheckCollision(p, gs.obstacles[i])) {
             gs.over = true;
+            // 写入排行榜（分数 + 存活秒数）
+            double survivalTime = (double)(gs.frameCount * FRAME_DELAY) / 1000.0;
+            tuple<int, double> record(gs.score, survivalTime);
+            writeRank(record);
             if (gs.score > g_highScore) {
                 g_highScore = gs.score;
             }
@@ -217,7 +277,7 @@ static void UpdateGame() {
     if (!p.jumping && !p.crouching) {
         p.animTimer--;
         if (p.animTimer <= 0) {
-            p.animFrame = (p.animFrame + 1) % 2;
+            p.animFrame = (p.animFrame + 1) % 6;
             p.animTimer = 6;
         }
     }
@@ -393,8 +453,11 @@ static void DrawGame() {
 // ========================================
 static void DrawPlayer() {
     const Player& p = gs.player;
-    IMAGE* img = p.crouching ? &img_player2 : &img_player1;
-    putimage(p.x, p.y, img);
+    if (p.crouching) {
+        DrawSpriteTransparent(&img_player2, &img_player2_mask, p.x, p.y);
+    } else {
+        DrawSpriteTransparent(&img_player_run[p.animFrame], &img_player_run_mask[p.animFrame], p.x, p.y);
+    }
 }
 
 // ========================================
@@ -405,13 +468,12 @@ static void DrawObstacles() {
         const Obstacle& o = gs.obstacles[i];
         if (!o.active) continue;
 
-        IMAGE* img;
         if (o.flying) {
-            img = &img_flying;                   // aqura 飞行物
-            putimage(o.x, o.y, img);
+            DrawSpriteTransparent(&img_flying, &img_flying_mask, o.x, o.y);
         } else {
-            img = (o.type == 0) ? &img_obs1 : &img_obs2;
-            putimage(o.x, GROUND_Y - o.drawH, img);  // 地面障碍物贴地
+            IMAGE* img  = (o.type == 0) ? &img_obs1 : &img_obs2;
+            IMAGE* mask = (o.type == 0) ? &img_obs1_mask : &img_obs2_mask;
+            DrawSpriteTransparent(img, mask, o.x, GROUND_Y - o.drawH);
         }
     }
 }

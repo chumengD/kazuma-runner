@@ -160,6 +160,12 @@
     <Image Include="public\kazuma_down.png" />
     <Image Include="public\lalatina.png" />
     <Image Include="public\megume.png" />
+    <Image Include="public\runner\001.png" />
+    <Image Include="public\runner\002.png" />
+    <Image Include="public\runner\003.png" />
+    <Image Include="public\runner\004.png" />
+    <Image Include="public\runner\005.png" />
+    <Image Include="public\runner\006.png" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="rank.txt" />
