@@ -3,10 +3,10 @@
 // ========================================
 // 常量
 // ========================================
-#define GRAVITY 0.8
+#define GRAVITY 0.8f
 #define JUMP_VELOCITY -20
 #define JUMP_RELEASE_VELOCITY -12  // 松开跳跃键时的最小上升速度（短按=小跳）
-#define GROUND_Y 350
+#define GROUND_Y 400
 #define PLAYER_X 120
 #define BASE_SPEED 5
 #define MAX_SPEED 14
@@ -19,6 +19,22 @@
 #define FLYING_OBS_LOW  310  // 飞行物高度-低位（贴地）
 #define FLYING_CHANCE 30     // 30% 概率生成飞行物
 #define FLYING_SPEED_BONUS 3 // 飞行物额外速度
+
+// ---- 滚动背景 ----
+#define SKY_TOP_COLOR     RGB(80, 150, 240)
+#define SKY_BOTTOM_COLOR  RGB(180, 220, 255)
+#define CLOUD_COLOR       RGB(255, 255, 255)
+
+#define HILL_FAR_COLOR    RGB(55, 125, 55)
+#define HILL_NEAR_COLOR   RGB(75, 165, 75)
+#define HILL_BASE_Y       (GROUND_Y - 30)
+#define HILL_FAR_AMPL     55
+#define HILL_NEAR_AMPL    35
+#define HILL_FAR_SPEED    0.06
+#define HILL_NEAR_SPEED   0.12
+#define HILL_TILE_W       800
+
+#define GRASS_STRIP_H     35
 
 // 精灵显示尺寸（loadimage 时缩放至以下尺寸）
 #define PLAYER_STAND_W   60   // kazuma 站立宽
@@ -75,6 +91,8 @@ static IMAGE img_obs1_mask;
 static IMAGE img_obs2_mask;
 static IMAGE img_flying_mask;
 static bool g_imagesLoaded = false;
+static IMAGE img_sky_bg;         // 预渲染天空渐变
+static bool g_bgInitialized = false;
 
 // 最高分（rang.cpp 通过 extern 引用）
 int g_highScore = 0;
@@ -98,6 +116,9 @@ static void DrawGround();
 static void DrawScore();
 static void DrawPauseOverlay();
 static void DrawGameOverOverlay();
+static void InitBackground();
+static void DrawSky();
+static void DrawHills();
 
 // ========================================
 // 精灵遮罩生成 + 透明贴图
@@ -159,6 +180,119 @@ static void LoadGameImages() {
 }
 
 // ========================================
+// 预渲染背景资源（只运行一次）
+// ========================================
+static void InitBackground() {
+    if (g_bgInitialized) return;
+
+    // ---- 天空渐变 (1200×350) ----
+    img_sky_bg.Resize(WINDOW_WID, GROUND_Y);
+    SetWorkingImage(&img_sky_bg);
+    for (int y = 0; y < GROUND_Y; y++) {
+        float t = (float)y / (GROUND_Y - 1);
+        int r = (int)(80  + (180 - 80)  * t);
+        int g = (int)(150 + (220 - 150) * t);
+        int b = (int)(240 + (255 - 240) * t);
+        setfillcolor(RGB(r, g, b));
+        solidrectangle(0, y, WINDOW_WID, y + 1);
+    }
+    SetWorkingImage(NULL);
+    g_bgInitialized = true;
+}
+
+// ========================================
+// 绘制天空（渐变 + 飘动云朵）
+// ========================================
+static void DrawSky() {
+    // 天空渐变
+    putimage(0, 0, &img_sky_bg);
+
+    // 云朵定义 (相对X, Y, 半径X, 半径Y)
+    static const struct { int relX, y, rx, ry; } clouds[] = {
+        { 100,  50,  70, 24},
+        { 350,  70,  85, 28},
+        { 580,  45,  55, 18},
+        { 780,  85,  75, 22},
+        { 950,  60,  50, 16},
+        { 200, 120,  65, 20},
+        { 850, 100,  60, 20},
+    };
+    const int CLOUD_COUNT = sizeof(clouds) / sizeof(clouds[0]);
+
+    int cloudOffset = (int)(gs.frameCount * 0.3f) % WINDOW_WID;
+
+    setfillcolor(CLOUD_COLOR);
+    for (int i = 0; i < CLOUD_COUNT; i++) {
+        int cx = (clouds[i].relX - cloudOffset + WINDOW_WID) % WINDOW_WID;
+        int cy = clouds[i].y;
+        int rx = clouds[i].rx;
+        int ry = clouds[i].ry;
+
+        // 主体椭圆 + 左右 puff
+        solidellipse(cx - rx,       cy - ry, cx + rx,       cy + ry);
+        solidellipse(cx - rx * 2/3, cy,      cx + rx / 3,   cy + ry * 3/4);
+        solidellipse(cx - rx / 3,   cy,      cx + rx * 2/3, cy + ry * 3/4);
+
+        // 边缘包装：如果云朵超出屏幕边界，在对侧补画
+        if (cx + rx > WINDOW_WID) {
+            int cx2 = cx - WINDOW_WID;
+            solidellipse(cx2 - rx,       cy - ry, cx2 + rx,       cy + ry);
+            solidellipse(cx2 - rx * 2/3, cy,      cx2 + rx / 3,   cy + ry * 3/4);
+            solidellipse(cx2 - rx / 3,   cy,      cx2 + rx * 2/3, cy + ry * 3/4);
+        }
+        if (cx - rx < 0) {
+            int cx2 = cx + WINDOW_WID;
+            solidellipse(cx2 - rx,       cy - ry, cx2 + rx,       cy + ry);
+            solidellipse(cx2 - rx * 2/3, cy,      cx2 + rx / 3,   cy + ry * 3/4);
+            solidellipse(cx2 - rx / 3,   cy,      cx2 + rx * 2/3, cy + ry * 3/4);
+        }
+    }
+}
+
+// ========================================
+// 绘制山丘（双层正弦波视差）
+// ========================================
+static void DrawHills() {
+    const int POINTS = 80;
+    const float M_2PI = 6.283185307f;
+    int pts[(POINTS + 2) * 2];  // EasyX fillpoly 使用平铺 int 数组 (x0,y0, x1,y1, ...)
+
+    // ---- 远山 (深色, 慢) ----
+    float farScroll = (float)((int)(gs.frameCount * gs.speed * HILL_FAR_SPEED) % HILL_TILE_W);
+    setfillcolor(HILL_FAR_COLOR);
+
+    for (int i = 0; i < POINTS; i++) {
+        float t = (float)i / (POINTS - 1);
+        int x = (int)(-50 + t * (WINDOW_WID + 100));
+        int y = HILL_BASE_Y - (int)(HILL_FAR_AMPL * sinf(M_2PI * 2.5f * (x + farScroll) / HILL_TILE_W));
+        pts[i * 2]     = x;
+        pts[i * 2 + 1] = y;
+    }
+    pts[POINTS * 2]         = WINDOW_WID + 50;
+    pts[POINTS * 2 + 1]     = GROUND_Y;
+    pts[(POINTS + 1) * 2]     = -50;
+    pts[(POINTS + 1) * 2 + 1] = GROUND_Y;
+    fillpoly(POINTS + 2, pts);
+
+    // ---- 近山 (浅色, 快) ----
+    float nearScroll = (float)((int)(gs.frameCount * gs.speed * HILL_NEAR_SPEED) % HILL_TILE_W);
+    setfillcolor(HILL_NEAR_COLOR);
+
+    for (int i = 0; i < POINTS; i++) {
+        float t = (float)i / (POINTS - 1);
+        int x = (int)(-50 + t * (WINDOW_WID + 100));
+        int y = HILL_BASE_Y - (int)(HILL_NEAR_AMPL * sinf(M_2PI * 4.0f * (x + nearScroll) / HILL_TILE_W));
+        pts[i * 2]     = x;
+        pts[i * 2 + 1] = y;
+    }
+    pts[POINTS * 2]         = WINDOW_WID + 50;
+    pts[POINTS * 2 + 1]     = GROUND_Y;
+    pts[(POINTS + 1) * 2]     = -50;
+    pts[(POINTS + 1) * 2 + 1] = GROUND_Y;
+    fillpoly(POINTS + 2, pts);
+}
+
+// ========================================
 // 初始化 / 重置游戏状态
 // ========================================
 static void InitGameState() {
@@ -211,7 +345,7 @@ static void UpdateGame() {
 
     // ---- 跳跃物理 ----
     if (p.jumping) {
-        p.y += p.vy;
+        p.y += (int)p.vy;
         p.vy += GRAVITY;
         // 落地检测（始终以站立高度为准）
         int groundLevel = GROUND_Y - PLAYER_STAND_H;
@@ -288,6 +422,7 @@ static void UpdateGame() {
 // ========================================
 static bool CheckCollision(const Player& p, const Obstacle& o) {
     int insetX = 8;
+
     int insetY = 5;
 
     int pL = p.x + insetX;
@@ -431,11 +566,9 @@ static void HandleGameInput() {
 static void DrawGame() {
     cleardevice();
 
-    // 天空背景
-    setfillcolor(RGB(135, 206, 235));
-    solidrectangle(0, 0, WINDOW_WID, GROUND_Y);
-
-    DrawGround();
+    DrawSky();          // 天空渐变 + 云朵
+    DrawHills();        // 双层山丘视差滚动
+    DrawGround();       // 草地 + 地面
     DrawObstacles();
     DrawPlayer();
     DrawScore();
@@ -482,24 +615,28 @@ static void DrawObstacles() {
 // 绘制地面 + 滚动虚线
 // ========================================
 static void DrawGround() {
-    // 地面底色
-    setfillcolor(RGB(139, 90, 43));
-    solidrectangle(0, GROUND_Y, WINDOW_WID, WINDOW_HEI);
+    // 草地
+    setfillcolor(RGB(55, 150, 40));
+    solidrectangle(0, GROUND_Y, WINDOW_WID, GROUND_Y + GRASS_STRIP_H);
 
-    // 地面线
-    setcolor(RGB(100, 60, 30));
-    setlinestyle(PS_SOLID, 3);
+    // 草地边缘
+    setcolor(RGB(30, 90, 20));
+    setlinestyle(PS_SOLID, 2);
     line(0, GROUND_Y, WINDOW_WID, GROUND_Y);
 
-    // 滚动虚线（视差效果）
+    // 泥土
+    setfillcolor(RGB(139, 90, 43));
+    solidrectangle(0, GROUND_Y + GRASS_STRIP_H, WINDOW_WID, WINDOW_HEI);
+
+    // 滚动虚线
     int offset = (gs.frameCount * (gs.speed - 2)) % 40;
     if (offset < 0) offset += 40;
 
     setcolor(RGB(160, 120, 60));
     setlinestyle(PS_SOLID, 2);
     for (int x = -offset; x < WINDOW_WID; x += 40) {
-        line(x,     GROUND_Y + 10, x + 18, GROUND_Y + 10);
-        line(x + 12, GROUND_Y + 25, x + 30, GROUND_Y + 25);
+        line(x,     GROUND_Y + GRASS_STRIP_H + 6,  x + 18, GROUND_Y + GRASS_STRIP_H + 6);
+        line(x + 12, GROUND_Y + GRASS_STRIP_H + 22, x + 30, GROUND_Y + GRASS_STRIP_H + 22);
     }
 }
 
@@ -536,21 +673,32 @@ static void DrawScore() {
 // 绘制暂停界面
 // ========================================
 static void DrawPauseOverlay() {
-    // 半透明遮罩效果：画一个深色矩形
-    setfillcolor(RGB(20, 20, 20));
-    solidrectangle(0, 0, WINDOW_WID, WINDOW_HEI);
+    // 居中半透明面板
+    int panelW = 420;
+    int panelH = 110;
+    int panelX = (WINDOW_WID - panelW) / 2;
+    int panelY = (WINDOW_HEI - panelH) / 2 - 30;
+
+    // 面板背景（深色圆角效果用多层矩形模拟）
+    setfillcolor(RGB(0, 0, 0));
+    solidrectangle(panelX, panelY, panelX + panelW, panelY + panelH);
+
+    // 面板边框
+    setcolor(RGB(80, 80, 80));
+    setlinestyle(PS_SOLID, 2);
+    rectangle(panelX, panelY, panelX + panelW, panelY + panelH);
 
     settextstyle(36, 0, _T("微软雅黑"));
     setbkmode(TRANSPARENT);
     setcolor(RGB(255, 255, 255));
 
-    RECT r = { 0, 145, WINDOW_WID, 205 };
+    RECT r = { panelX, panelY + 8, panelX + panelW, panelY + 48 };
     drawtext(_T("暂停中"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 
     settextstyle(18, 0, _T("微软雅黑"));
     setcolor(RGB(200, 200, 200));
 
-    r = { 0, 230, WINDOW_WID, 265 };
+    r = { panelX, panelY + 55, panelX + panelW, panelY + 95 };
     drawtext(_T("按 空格/回车 继续 | 按 ESC 返回菜单"), &r, DT_CENTER | DT_VCENTER | DT_SINGLELINE);
 }
 
@@ -608,6 +756,7 @@ static void DrawGameOverOverlay() {
 // ========================================
 int GameStart() {
     LoadGameImages();
+    InitBackground();       // 预渲染天空渐变
     InitGameState();
     g_inGame = true;
     BeginBatchDraw();          // 开启双缓冲，消除闪烁

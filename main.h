@@ -8,6 +8,7 @@
 #include <fstream>
 #include <sstream>
 #include <ctime>
+#include <cmath>
 
 #define WINDOW_WID 1200
 #define WINDOW_HEI 700
