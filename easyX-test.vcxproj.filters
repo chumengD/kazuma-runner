@@ -47,6 +47,9 @@
     <ClInclude Include="resource.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="menu.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="public\b1.png">
@@ -89,6 +92,27 @@
       <Filter>源文件\public</Filter>
     </Image>
     <Image Include="public\black_bg.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\aqura.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="public\runner\006.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\runner\001.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\runner\002.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\runner\003.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\runner\004.png">
+      <Filter>源文件\public</Filter>
+    </Image>
+    <Image Include="public\runner\005.png">
       <Filter>源文件\public</Filter>
     </Image>
   </ItemGroup>
