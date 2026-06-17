@@ -1,0 +1,61 @@
+{
+  "updatedAt": "2026-06-17T04:05:01.764Z",
+  "missions": [
+    {
+      "id": "session:61d0df45-894a-4e55-90bb-cf05836967c1:none",
+      "source": "session",
+      "name": "none",
+      "objective": "Session mission",
+      "createdAt": "2026-06-17T03:58:10.207Z",
+      "updatedAt": "2026-06-17T04:05:01.764Z",
+      "status": "done",
+      "workerCount": 1,
+      "taskCounts": {
+        "total": 1,
+        "pending": 0,
+        "blocked": 0,
+        "inProgress": 0,
+        "completed": 1,
+        "failed": 0
+      },
+      "agents": [
+        {
+          "name": "Explore:afb667d",
+          "role": "Explore",
+          "ownership": "afb667dfeb1178936",
+          "status": "done",
+          "currentStep": null,
+          "latestUpdate": "completed",
+          "completedSummary": null,
+          "updatedAt": "2026-06-17T04:05:01.764Z"
+        }
+      ],
+      "timeline": [
+        {
+          "id": "session-start:afb667dfeb1178936:2026-06-17T03:58:10.207Z",
+          "at": "2026-06-17T03:58:10.207Z",
+          "kind": "update",
+          "agent": "Explore:afb667d",
+          "detail": "started Explore:afb667d",
+          "sourceKey": "session-start:afb667dfeb1178936"
+        },
+        {
+          "id": "session-stop:afb667dfeb1178936:2026-06-17T03:59:05.208Z",
+          "at": "2026-06-17T03:59:05.208Z",
+          "kind": "completion",
+          "agent": "Explore:afb667d",
+          "detail": "completed",
+          "sourceKey": "session-stop:afb667dfeb1178936"
+        },
+        {
+          "id": "session-stop:a19ee6e835713ac2c:2026-06-17T04:05:01.764Z",
+          "at": "2026-06-17T04:05:01.764Z",
+          "kind": "completion",
+          "agent": "Explore:afb667d",
+          "detail": "completed",
+          "sourceKey": "session-stop:a19ee6e835713ac2c"
+        }
+      ]
+    }
+  ]
+}
