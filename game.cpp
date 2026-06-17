@@ -6,17 +6,17 @@
 #define GRAVITY 0.8f
 #define JUMP_VELOCITY -20
 #define JUMP_RELEASE_VELOCITY -12  // 松开跳跃键时的最小上升速度（短按=小跳）
-#define GROUND_Y 400
+#define GROUND_Y 450
 #define PLAYER_X 120
 #define BASE_SPEED 5
 #define MAX_SPEED 14
 #define MAX_OBSTACLES 3
-#define OBS_SCALE 90       // 障碍物碰撞盒 = 显示尺寸 × 60%
+#define OBS_SCALE 80      
 #define MIN_SPAWN_DELAY 80
 #define MAX_SPAWN_DELAY 160
 #define FRAME_DELAY 16       // ~60 FPS
-#define FLYING_OBS_HIGH 200  // 飞行物高度-高位（头部）
-#define FLYING_OBS_LOW  310  // 飞行物高度-低位（贴地）
+#define FLYING_OBS_HIGH 265  // 飞行物高度-高位（头部）
+#define FLYING_OBS_LOW  340  // 飞行物高度-低位（贴地）
 #define FLYING_CHANCE 30     // 30% 概率生成飞行物
 #define FLYING_SPEED_BONUS 3 // 飞行物额外速度
 
@@ -37,10 +37,10 @@
 #define GRASS_STRIP_H     35
 
 // 精灵显示尺寸（loadimage 时缩放至以下尺寸）
-#define PLAYER_STAND_W   60   // kazuma 站立宽
-#define PLAYER_STAND_H  145   // kazuma 站立高
-#define PLAYER_CROUCH_W  60   // kazuma 下蹲宽
-#define PLAYER_CROUCH_H  95   // kazuma 下蹲高
+#define PLAYER_STAND_W   72   // kazuma 站立宽
+#define PLAYER_STAND_H  174   // kazuma 站立高
+#define PLAYER_CROUCH_W  72   // kazuma 下蹲宽
+#define PLAYER_CROUCH_H 114   // kazuma 下蹲高
 
 // ========================================
 // 结构体
@@ -170,11 +170,11 @@ static void LoadGameImages() {
     }
     loadimage(&img_player2, _T("public/kazuma_down.png"), PLAYER_CROUCH_W, PLAYER_CROUCH_H, true);
     GenerateSpriteMask(&img_player2, &img_player2_mask);
-    loadimage(&img_obs1,    _T("public/lalatina.png"), 48,              120,              true);
+    loadimage(&img_obs1,    _T("public/lalatina.png"), 58,              144,              true);
     GenerateSpriteMask(&img_obs1, &img_obs1_mask);
-    loadimage(&img_obs2,    _T("public/megume.png"),   100,             58,              true);
+    loadimage(&img_obs2,    _T("public/megume.png"),   120,             70,               true);
     GenerateSpriteMask(&img_obs2, &img_obs2_mask);
-    loadimage(&img_flying,  _T("public/aqura.png"),    100,             60,              true);
+    loadimage(&img_flying,  _T("public/aqura.png"),    120,             72,               true);
     GenerateSpriteMask(&img_flying, &img_flying_mask);
     g_imagesLoaded = true;
 }
