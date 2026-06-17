@@ -760,6 +760,7 @@ int GameStart() {
     InitGameState();
     g_inGame = true;
     BeginBatchDraw();          // 开启双缓冲，消除闪烁
+    play_music(TEXT("public/gaming.mp3"));
 
     while (g_inGame) {
         HandleGameInput();
@@ -780,6 +781,7 @@ int GameStart() {
         Sleep(FRAME_DELAY);
     }
 
+    stop_music();
     EndBatchDraw();            // 退出游戏循环，关闭双缓冲
     g_inGame = false;
     return 1;   // 返回菜单（真正的退出在菜单中选"退出游戏"）
