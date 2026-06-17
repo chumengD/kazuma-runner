@@ -3,15 +3,15 @@
 // ========================================
 // 常量
 // ========================================
-#define GRAVITY 0.8f
+#define GRAVITY 0.6f
 #define JUMP_VELOCITY -20
 #define JUMP_RELEASE_VELOCITY -12  // 松开跳跃键时的最小上升速度（短按=小跳）
-#define GROUND_Y 450
+#define GROUND_Y 490
 #define PLAYER_X 120
-#define BASE_SPEED 5
+#define BASE_SPEED 7.
 #define MAX_SPEED 14
 #define MAX_OBSTACLES 3
-#define OBS_SCALE 80      
+#define OBS_SCALE 85       // 障碍物碰撞盒 = 显示尺寸 × 85%      
 #define MIN_SPAWN_DELAY 80
 #define MAX_SPAWN_DELAY 160
 #define FRAME_DELAY 16       // ~60 FPS
@@ -37,10 +37,10 @@
 #define GRASS_STRIP_H     35
 
 // 精灵显示尺寸（loadimage 时缩放至以下尺寸）
-#define PLAYER_STAND_W   72   // kazuma 站立宽
+#define PLAYER_STAND_W  116   // kazuma 站立宽
 #define PLAYER_STAND_H  174   // kazuma 站立高
-#define PLAYER_CROUCH_W  72   // kazuma 下蹲宽
-#define PLAYER_CROUCH_H 114   // kazuma 下蹲高
+#define PLAYER_CROUCH_W  202  // kazuma 下蹲宽
+#define PLAYER_CROUCH_H  114  // kazuma 下蹲高
 
 // ========================================
 // 结构体
@@ -170,22 +170,22 @@ static void LoadGameImages() {
     }
     loadimage(&img_player2, _T("public/kazuma_down.png"), PLAYER_CROUCH_W, PLAYER_CROUCH_H, true);
     GenerateSpriteMask(&img_player2, &img_player2_mask);
-    loadimage(&img_obs1,    _T("public/lalatina.png"), 58,              144,              true);
+    loadimage(&img_obs1,    _T("public/lalatina.png"), 80,              172,              true);
     GenerateSpriteMask(&img_obs1, &img_obs1_mask);
-    loadimage(&img_obs2,    _T("public/megume.png"),   120,             70,               true);
+    loadimage(&img_obs2,    _T("public/megume.png"),   144,             80,               true);
     GenerateSpriteMask(&img_obs2, &img_obs2_mask);
-    loadimage(&img_flying,  _T("public/aqura.png"),    120,             72,               true);
+    loadimage(&img_flying,  _T("public/aqura.png"),    144,             82,               true);
     GenerateSpriteMask(&img_flying, &img_flying_mask);
     g_imagesLoaded = true;
 }
 
 // ========================================
-// 预渲染背景资源（只运行一次）
+// 预渲染背景资源
 // ========================================
 static void InitBackground() {
     if (g_bgInitialized) return;
 
-    // ---- 天空渐变 (1200×350) ----
+    // ---- 天空渐变  ----
     img_sky_bg.Resize(WINDOW_WID, GROUND_Y);
     SetWorkingImage(&img_sky_bg);
     for (int y = 0; y < GROUND_Y; y++) {
@@ -201,7 +201,7 @@ static void InitBackground() {
 }
 
 // ========================================
-// 绘制天空（渐变 + 飘动云朵）
+// 绘制天空
 // ========================================
 static void DrawSky() {
     // 天空渐变
