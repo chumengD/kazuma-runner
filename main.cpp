@@ -6,6 +6,7 @@ int main() {
 
 	// 手动将窗口居中（部分系统上 CW_USEDEFAULT 不会居中）
 	HWND hWnd = GetHWnd();
+	SetWindowText(hWnd, _T("kazuma-Run"));
 	int screenW = GetSystemMetrics(SM_CXSCREEN);
 	int screenH = GetSystemMetrics(SM_CYSCREEN);
 	RECT rect;

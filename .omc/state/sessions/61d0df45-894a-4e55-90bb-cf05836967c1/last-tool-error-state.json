@@ -1,0 +1,7 @@
+{
+  "tool_name": "Bash",
+  "tool_input_preview": "{\"command\":\"cd \\\"F:/visula studio repo/easyX-test\\\" && rm -rf .vs && echo \\\"Removed .vs\\\" && if [ -d \\\"easyX-test\\\" ]; then mv easyX-test \\\"kazuma-Run\\\" && echo \\\"Renamed build output dir\\\"; else echo...",
+  "error": "Exit code 1\nrm: cannot remove '.vs/easyX-test.slnx/FileContentIndex/381c4eab-c27c-4f39-89af-1e4893065b05.vsidx': Device or resource busy\nrm: cannot remove '.vs/easyX-test.slnx/FileContentIndex/6c557d0d-7183-443b-9476-d9e9b8d7e248.vsidx': Device or resource busy\nrm: cannot remove '.vs/easyX-test.slnx/FileContentIndex/bc64ea24-85a6-4317-99cb-4e8ab34bff12.vsidx': Device or resource busy\nrm: cannot remove '.vs/easyX-test.slnx/FileContentIndex/c4bc7a7e-1e70-4748-beb2-6433ea97815e.vsidx': Device or re...",
+  "timestamp": "2026-06-17T04:03:45.124Z",
+  "retry_count": 1
+}

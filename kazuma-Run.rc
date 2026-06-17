@@ -1,0 +1,9 @@
+// Microsoft Visual C++ generated resource script.
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+#include "windows.h"
+#undef APSTUDIO_READONLY_SYMBOLS
+
+// 程序图标
+IDI_MAIN_ICON               ICON                    "public\\app.ico"

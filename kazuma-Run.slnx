@@ -1,0 +1,7 @@
+<Solution>
+  <Configurations>
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Project Path="easyX-test.vcxproj" Id="c1beb441-d6f0-4bd9-98ab-38bc67d4d4c5" />
+</Solution>
