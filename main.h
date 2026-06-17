@@ -8,6 +8,9 @@
 #include <fstream>
 #include <sstream>
 #include <ctime>
+#include <mmsystem.h>
+
+#pragma comment(lib, "winmm.lib")
 
 #define WINDOW_WID 1200
 #define WINDOW_HEI 700
