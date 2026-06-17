@@ -12,6 +12,7 @@
 
 #pragma comment(lib, "winmm.lib")
 #include <cmath>
+#include "resource.h"
 
 #define WINDOW_WID 1200
 #define WINDOW_HEI 700
@@ -44,3 +45,7 @@ extern IMAGE rankStyle, rank_mask;
 
 // ---- 游戏状态标志（菜单判断是否正在游戏中） ----
 extern bool g_inGame;
+
+//音乐
+void play_music(const TCHAR* file);
+void stop_music();

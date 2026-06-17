@@ -71,14 +71,26 @@
     },
     {
       "path": "menu.cpp",
-      "accessCount": 5,
-      "lastAccessed": 1781587287142,
+      "accessCount": 13,
+      "lastAccessed": 1781666875435,
+      "type": "file"
+    },
+    {
+      "path": "main.cpp",
+      "accessCount": 13,
+      "lastAccessed": 1781667929315,
+      "type": "file"
+    },
+    {
+      "path": "easyX-test.vcxproj",
+      "accessCount": 7,
+      "lastAccessed": 1781667782235,
       "type": "file"
     },
     {
       "path": "main.h",
-      "accessCount": 3,
-      "lastAccessed": 1781587856586,
+      "accessCount": 6,
+      "lastAccessed": 1781667799092,
       "type": "file"
     },
     {
@@ -88,27 +100,33 @@
       "type": "file"
     },
     {
-      "path": "main.cpp",
-      "accessCount": 2,
-      "lastAccessed": 1781587927991,
+      "path": "",
+      "accessCount": 3,
+      "lastAccessed": 1781665988589,
+      "type": "directory"
+    },
+    {
+      "path": "resource.h",
+      "accessCount": 3,
+      "lastAccessed": 1781667810013,
       "type": "file"
     },
     {
-      "path": "",
+      "path": "music.cpp",
       "accessCount": 2,
-      "lastAccessed": 1781587967882,
-      "type": "directory"
+      "lastAccessed": 1781666001154,
+      "type": "file"
+    },
+    {
+      "path": "easyX-test.rc",
+      "accessCount": 2,
+      "lastAccessed": 1781667809666,
+      "type": "file"
     },
     {
       "path": "easyX-test.slnx",
       "accessCount": 1,
       "lastAccessed": 1781586949017,
-      "type": "file"
-    },
-    {
-      "path": "easyX-test.vcxproj",
-      "accessCount": 1,
-      "lastAccessed": 1781586953631,
       "type": "file"
     },
     {

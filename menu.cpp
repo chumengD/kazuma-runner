@@ -59,9 +59,16 @@ void InitResource() {
 	GenerateMask(&arrow, &arrow_mask);
 }
 
+static bool menuMusicPlaying = false;
+
 // 读取键盘输入
 int menu() {
 	ExMessage msg;
+
+	if (!menuMusicPlaying) {
+		play_music(TEXT("public/menu.mp3"));
+		menuMusicPlaying = true;
+	}
 
 	// 先画一次初始菜单
 	DrawMenu();
@@ -73,6 +80,8 @@ int menu() {
 				// 再次按下 ESC 退出菜单
 				switch (msg.vkcode) {
 				case VK_ESCAPE:
+					stop_music();
+					menuMusicPlaying = false;
 					return 0;
 				case VK_UP:
 					if (currentMenu > 1) currentMenu--;
@@ -136,7 +145,8 @@ int EnterMenu() {
 
 	switch (currentMenu) {
 	case 1:
-		// 启动跑酷游戏，GameStart 阻塞直到用户退出
+		stop_music();
+		menuMusicPlaying = false;
 		return GameStart();
 
 	case 2:
@@ -152,7 +162,8 @@ int EnterMenu() {
 		break;
 
 	case 5:
-		// 退出程序
+		stop_music();
+		menuMusicPlaying = false;
 		return 0;
 	}
 	return 1;
