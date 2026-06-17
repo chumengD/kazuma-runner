@@ -11,6 +11,7 @@
 #include <mmsystem.h>
 
 #pragma comment(lib, "winmm.lib")
+#include <cmath>
 
 #define WINDOW_WID 1200
 #define WINDOW_HEI 700
